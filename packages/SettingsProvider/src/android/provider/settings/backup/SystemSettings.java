@@ -87,5 +87,6 @@ public class SystemSettings {
         Settings.System.ACCENT_COLOR,
         Settings.System.COLOR_BUCKET_OVERLAY,
         Settings.System.DOUBLE_TAP_SLEEP_GESTURE,
+        Settings.System.DOUBLE_TAP_SLEEP_LOCKSCREEN,
     };
 }
