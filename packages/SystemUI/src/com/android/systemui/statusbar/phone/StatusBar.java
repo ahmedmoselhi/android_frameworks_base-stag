@@ -65,6 +65,7 @@ import android.app.WallpaperManager;
 import android.app.admin.DevicePolicyManager;
 import android.content.BroadcastReceiver;
 import android.content.ComponentCallbacks2;
+import android.content.ContentResolver;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
@@ -73,6 +74,7 @@ import android.content.pm.IPackageManager;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.content.res.Configuration;
+import android.database.ContentObserver;
 import android.graphics.Point;
 import android.graphics.PointF;
 import android.media.AudioAttributes;
@@ -674,6 +676,36 @@ public class StatusBar extends SystemUI implements DemoMode,
 
     private ActivityIntentHelper mActivityIntentHelper;
 
+    private class CustomSettingsObserver extends ContentObserver {
+        CustomSettingsObserver(Handler handler) {
+            super(handler);
+        }
+
+        void observe() {
+            ContentResolver resolver = mContext.getContentResolver();
+            /*resolver.registerContentObserver(Settings.System.getUriFor(
+                    Settings.System.XXX),
+                    false, this, UserHandle.USER_ALL);*/
+        }
+
+        @Override
+        public void onChange(boolean selfChange) {
+            /*if (uri.equals(Settings.System.getUriFor(
+                    Settings.System.XXX))) {
+                doXXX();
+            }*/
+        }
+
+        public void update() {
+            //doXXX();
+        }
+    }
+
+    /*private void doXXX() {
+    }*/
+
+    private CustomSettingsObserver mCustomSettingsObserver;
+
     /**
      * Public constructor for StatusBar.
      *
@@ -1030,6 +1062,10 @@ public class StatusBar extends SystemUI implements DemoMode,
                 }, OverlayPlugin.class, true /* Allow multiple plugins */);
                 mActivityManager = mContext.getSystemService(ActivityManager.class);
                 mFODCircleViewImpl.registerCallback(mFODCircleViewImplCallback);
+
+	        mCustomSettingsObserver = new CustomSettingsObserver(mHandler);
+        	mCustomSettingsObserver.observe();
+        	mCustomSettingsObserver.update();
     }
 
     // ================================================================================
