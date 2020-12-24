@@ -142,6 +142,7 @@ public abstract class BiometricServiceBase extends SystemService
 
     private final boolean mNotifyClient;
     private final boolean mCleanupUnusedFingerprints;
+    private final boolean mPostResetRunnableForAllClients;
 
     /**
      * @return the log tag.
@@ -668,6 +669,8 @@ public abstract class BiometricServiceBase extends SystemService
                 com.android.internal.R.bool.config_notifyClientOnFingerprintCancelSuccess);
         mCleanupUnusedFingerprints = mContext.getResources().getBoolean(
                 com.android.internal.R.bool.config_cleanupUnusedFingerprints);
+        mPostResetRunnableForAllClients = mContext.getResources().getBoolean(
+                com.android.internal.R.bool.config_fingerprintPostResetRunnableForAllClients);
     }
 
     @Override
@@ -1081,6 +1084,10 @@ public abstract class BiometricServiceBase extends SystemService
                             + newClient.getClass().getSuperclass().getSimpleName()
                             + "(" + newClient.getOwnerString() + ")"
                             + ", initiatedByClient = " + initiatedByClient);
+                }
+                if (mPostResetRunnableForAllClients) {
+                    mHandler.removeCallbacks(mResetClientState);
+                    mHandler.postDelayed(mResetClientState, CANCEL_TIMEOUT_LIMIT);
                 }
             } else {
                 currentClient.stop(initiatedByClient);
